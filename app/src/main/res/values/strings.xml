@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TestPoint</string>
+    <string name="start_button">Поехали</string>
+    <string name="edit_text_hint_enter_point_count">Введите кол-во точек</string>
+</resources>
