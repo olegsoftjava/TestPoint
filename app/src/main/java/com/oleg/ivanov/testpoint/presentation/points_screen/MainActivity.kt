@@ -31,7 +31,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var pointsViewModel: PointsViewModelImpl
+    private val pointsViewModel: PointsViewModelImpl by lazy {
+        ViewModelProvider(this, viewModelFactory)[PointsViewModelImpl::class.java]
+    }
 
     @Inject
     lateinit var screenRouter: ScreenRouter
@@ -43,9 +45,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
-
-        pointsViewModel =
-            ViewModelProvider(this, viewModelFactory)[PointsViewModelImpl::class.java]
 
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

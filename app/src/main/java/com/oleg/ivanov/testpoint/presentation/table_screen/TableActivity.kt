@@ -38,7 +38,10 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var tableViewModel: TableViewModelImpl
+
+    private val tableViewModel: TableViewModelImpl by lazy {
+        ViewModelProvider(this, viewModelFactory)[TableViewModelImpl::class.java]
+    }
 
     private var recyclerViewState: Parcelable? = null
     private var currentScale: Float = 1f
@@ -52,9 +55,6 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
-
-        tableViewModel =
-            ViewModelProvider(this, viewModelFactory)[TableViewModelImpl::class.java]
 
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_table)) { v, insets ->
