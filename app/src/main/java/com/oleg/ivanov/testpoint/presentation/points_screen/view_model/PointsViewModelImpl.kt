@@ -3,11 +3,11 @@ package com.oleg.ivanov.testpoint.presentation.points_screen.view_model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oleg.ivanov.testpoint.repository.PointsManager
+import com.oleg.ivanov.testpoint.repository.model.ErrorModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class PointsViewModelImpl @Inject constructor(
@@ -19,16 +19,25 @@ class PointsViewModelImpl @Inject constructor(
         get() = _viewState
 
     override fun getPoints(count: Int) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                pointsManager.getPoints(count).let {
-                    if (it.errorModel == null) {
-                        _viewState.emit(PointsViewState.PointData(it.pointModel))
-                    } else {
-                        _viewState.emit(PointsViewState.PointError(it.errorModel))
-                    }
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = runCatching {
+                pointsManager.getPoints(count)
             }
+
+            val pointsViewState = result.fold(
+                onSuccess = { responsePointModel ->
+                    if (responsePointModel.errorModel == null) {
+                        PointsViewState.PointData(responsePointModel.pointModel)
+                    } else {
+                        PointsViewState.PointError(responsePointModel.errorModel)
+                    }
+                },
+                onFailure = {
+                    PointsViewState.PointError(ErrorModel("Unexpected error occurred", -1))
+                }
+            )
+
+            _viewState.emit(pointsViewState)
         }
     }
 
