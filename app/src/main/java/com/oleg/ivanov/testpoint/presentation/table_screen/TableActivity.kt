@@ -6,6 +6,7 @@ import android.graphics.Matrix
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -78,11 +79,11 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
 
         render()
 
-        binding.imageView.setOnMatrixChangeListener { rect ->
+        binding.imageView.setOnMatrixChangeListener { _ ->
             val matrixValues = FloatArray(9)
             binding.imageView.imageMatrix.getValues(matrixValues)
-
             currentScale = matrixValues[Matrix.MSCALE_X]
+            Log.i("TEST_1_1", "currentScale = $currentScale")
         }
 
         lifecycleScope.launch {
