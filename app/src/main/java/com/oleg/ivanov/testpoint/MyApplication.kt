@@ -10,8 +10,7 @@ class MyApplication : Application(), DefaultLifecycleObserver {
 
     companion object {
         lateinit var appComponent: ApplicationComponent
-        lateinit var instance: MyApplication
-            private set
+        lateinit var instance: MyApplication private set
     }
 
     init {
