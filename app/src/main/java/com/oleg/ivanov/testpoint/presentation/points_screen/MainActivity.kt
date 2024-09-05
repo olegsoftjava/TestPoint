@@ -9,8 +9,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.oleg.ivanov.testpoint.MyApplication
-import com.oleg.ivanov.testpoint.MyApplication.Companion.dispatcherMain
 import com.oleg.ivanov.testpoint.R
 import com.oleg.ivanov.testpoint.databinding.ActivityMainBinding
 import com.oleg.ivanov.testpoint.presentation.BaseActivity
@@ -21,9 +21,7 @@ import com.oleg.ivanov.testpoint.presentation.ext_ui.animateUpDown
 import com.oleg.ivanov.testpoint.presentation.points_screen.view_model.PointsViewModelImpl
 import com.oleg.ivanov.testpoint.presentation.points_screen.view_model.PointsViewState
 import com.oleg.ivanov.testpoint.screen_router.ScreenRouter
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,8 +35,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     @Inject
     lateinit var screenRouter: ScreenRouter
-
-    private var jobList: MutableList<Job?> = mutableListOf()
 
     init {
         MyApplication.appComponent.inject(this)
@@ -65,33 +61,30 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun render() {
-        jobList.add(
-            CoroutineScope(dispatcherMain).launch {
-                pointsViewModel.viewState.collect { data ->
-                    updateUI(isLoading = false)
-                    when (data) {
-                        is PointsViewState.PointData -> {
-                            screenRouter.openTableScreen(this@MainActivity, data.pointModel)
-                        }
+        lifecycleScope.launch {
+            pointsViewModel.viewState.collect { data ->
+                updateUI(isLoading = false)
+                when (data) {
+                    is PointsViewState.PointData -> {
+                        screenRouter.openTableScreen(this@MainActivity, data.pointModel)
+                    }
 
-                        is PointsViewState.PointError -> {
-                            withContext(dispatcherMain) {
-                                showError()
-                                binding.buttonStart.animateLeftRight()
-                                Toast.makeText(
-                                    /* context = */ this@MainActivity,
-                                    /* text = */
-                                    "code:${data.errorModel.code} Error:${data.errorModel.description}",
-                                    /* duration = */
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                    is PointsViewState.PointError -> {
+                        withContext(Dispatchers.Main) {
+                            showError()
+                            binding.buttonStart.animateLeftRight()
+                            Toast.makeText(
+                                /* context = */ this@MainActivity,
+                                /* text = */
+                                "code:${data.errorModel.code} Error:${data.errorModel.description}",
+                                /* duration = */
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
             }
-        )
-
+        }
     }
 
     private fun setupButtonStart() {
@@ -133,20 +126,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun showError() {
-        CoroutineScope(dispatcherMain).launch {
+        lifecycleScope.launch {
             binding.imageViewError.isVisible = true
             binding.imageViewError.animateSpeedWayFromDownToUp()
             delay(1000)
             binding.imageViewError.animateAlphaDown()
             delay(700)
             binding.imageViewError.isVisible = false
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        jobList.forEach {
-            it?.cancel()
         }
     }
 

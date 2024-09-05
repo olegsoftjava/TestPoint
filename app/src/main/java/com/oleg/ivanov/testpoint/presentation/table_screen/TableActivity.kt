@@ -15,10 +15,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.oleg.ivanov.testpoint.MyApplication
-import com.oleg.ivanov.testpoint.MyApplication.Companion.dispatcherMain
 import com.oleg.ivanov.testpoint.R
 import com.oleg.ivanov.testpoint.databinding.ActivityTableBinding
 import com.oleg.ivanov.testpoint.presentation.BaseActivity
@@ -30,8 +30,6 @@ import com.oleg.ivanov.testpoint.presentation.table_screen.adapter.PointAdapter
 import com.oleg.ivanov.testpoint.presentation.table_screen.view_model.TableViewModelImpl
 import com.oleg.ivanov.testpoint.presentation.table_screen.view_model.TableViewState
 import com.oleg.ivanov.testpoint.repository.model.PointModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,8 +39,6 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var tableViewModel: TableViewModelImpl
-
-    private var jobList: MutableList<Job?> = mutableListOf()
 
     private var recyclerViewState: Parcelable? = null
     private var currentScale: Float = 1f
@@ -89,10 +85,10 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
             currentScale = matrixValues[Matrix.MSCALE_X]
         }
 
-        jobList.add(CoroutineScope(dispatcherMain).launch {
+        lifecycleScope.launch {
             tableViewModel.getListData()
             tableViewModel.getBitmapData()
-        })
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -104,15 +100,8 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
         outState.putFloat("image_scale", currentScale)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        jobList.forEach {
-            it?.cancel()
-        }
-    }
-
     private fun render() {
-        jobList.add(CoroutineScope(dispatcherMain).launch {
+        lifecycleScope.launch {
             tableViewModel.viewState.collect { data ->
                 when (data) {
                     is TableViewState.PointData -> {
@@ -139,7 +128,7 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
                     }
                 }
             }
-        })
+        }
     }
 
     @UiThread
@@ -161,7 +150,7 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
 
     private fun tryShowOops(show: Boolean) {
         if (show && isColdStart) {
-            CoroutineScope(dispatcherMain).launch {
+            lifecycleScope.launch {
                 binding.imageOops.isVisible = true
                 binding.imageOops.animateSpeedWayFromDownToUp()
                 delay(3000)
@@ -187,7 +176,7 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
         binding.imageViewSave.isVisible = true
 
         if (needAnimate) {
-            CoroutineScope(dispatcherMain).launch {
+            lifecycleScope.launch {
                 delay(500)
                 binding.imageViewSave.animateUpDown()
             }

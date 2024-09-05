@@ -2,8 +2,8 @@ package com.oleg.ivanov.testpoint.presentation.points_screen.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oleg.ivanov.testpoint.MyApplication.Companion.dispatcherIO
 import com.oleg.ivanov.testpoint.repository.PointsManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ class PointsViewModelImpl @Inject constructor(
 
     override fun getPoints(count: Int) {
         viewModelScope.launch {
-            withContext(dispatcherIO) {
+            withContext(Dispatchers.IO) {
                 pointsManager.getPoints(count).let {
                     if (it.errorModel == null) {
                         _viewState.emit(PointsViewState.PointData(it.pointModel))

@@ -5,8 +5,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
-import com.oleg.ivanov.testpoint.MyApplication.Companion.dispatcherIO
 import com.oleg.ivanov.testpoint.repository.model.PointModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
@@ -21,7 +21,7 @@ class GraphPoint {
 
         var bitmap: Bitmap? = null
 
-        withContext(dispatcherIO) {
+        withContext(Dispatchers.IO) {
             val width = 4000
             val height = 4000
 

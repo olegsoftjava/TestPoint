@@ -5,7 +5,6 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import com.oleg.ivanov.testpoint.di.AppModule
 import com.oleg.ivanov.testpoint.di.ApplicationComponent
 import com.oleg.ivanov.testpoint.di.DaggerApplicationComponent
-import kotlinx.coroutines.Dispatchers
 
 class MyApplication : Application(), DefaultLifecycleObserver {
 
@@ -13,8 +12,6 @@ class MyApplication : Application(), DefaultLifecycleObserver {
         lateinit var appComponent: ApplicationComponent
         lateinit var instance: MyApplication
             private set
-        var dispatcherMain = Dispatchers.Main
-        var dispatcherIO = Dispatchers.IO
     }
 
     init {

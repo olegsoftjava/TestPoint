@@ -7,7 +7,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import com.oleg.ivanov.testpoint.AppSettings
-import com.oleg.ivanov.testpoint.MyApplication.Companion.dispatcherIO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.OutputStream
@@ -20,7 +20,7 @@ class FileSaver {
     suspend fun saveBitmapToPictures(context: Context, bitmap: Bitmap): Boolean {
         var saveSuccess = false
 
-        withContext(dispatcherIO) {
+        withContext(Dispatchers.IO) {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val fileName = "${AppSettings.FILE_IMAGE}$timeStamp.jpg"
 
