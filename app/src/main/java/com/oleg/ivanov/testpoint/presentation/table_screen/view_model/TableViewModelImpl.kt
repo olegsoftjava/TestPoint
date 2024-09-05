@@ -26,7 +26,7 @@ class TableViewModelImpl @Inject constructor(
         }
     }
 
-    override fun saveFile(context: Context, bitmap: Bitmap) {
+    override fun saveToFile(context: Context, bitmap: Bitmap) {
         viewModelScope.launch {
             val fileSaver = FileSaver()
             val saveSuccess = fileSaver.saveBitmapToPictures(context, bitmap)

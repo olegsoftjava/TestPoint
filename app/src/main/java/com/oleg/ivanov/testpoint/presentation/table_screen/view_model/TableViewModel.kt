@@ -8,5 +8,5 @@ interface TableViewModel {
     val viewState: Flow<TableViewState>
     fun getListData()
     fun getBitmapData()
-    fun saveFile(context: Context, bitmap: Bitmap)
+    fun saveToFile(context: Context, bitmap: Bitmap)
 }

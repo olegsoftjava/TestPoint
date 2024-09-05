@@ -12,7 +12,7 @@ class ScreenRouterImpl @Inject constructor(
 ) : ScreenRouter {
 
     override fun openTableScreen(activity: Activity, data: List<PointModel>?) {
-        pointsDataProvider.sendData(data) // Данных много, по этому надо како-то провайдер бандл не прокатит
+        pointsDataProvider.sendData(data)
         val intentTableActivity =
             Intent(activity, TableActivity::class.java)
         activity.startActivity(intentTableActivity)

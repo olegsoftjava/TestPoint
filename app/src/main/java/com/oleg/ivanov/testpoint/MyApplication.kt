@@ -22,7 +22,6 @@ class MyApplication : Application(), DefaultLifecycleObserver {
         super<Application>.onCreate()
 
         initDaggerComponent()
-
     }
 
     private fun initDaggerComponent() {

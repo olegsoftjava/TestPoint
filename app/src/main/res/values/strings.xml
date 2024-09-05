@@ -4,4 +4,6 @@
     <string name="edit_text_hint_enter_point_count">Введите кол-во точек</string>
     <string name="error_quantity_must_be_greater_than_0">Error! Quantity must be greater than 0</string>
     <string name="unknown_error">Unknown error</string>
+    <string name="Query_array_points">Запрос массива точек</string>
+    <string name="visualization">Визуализация</string>
 </resources>

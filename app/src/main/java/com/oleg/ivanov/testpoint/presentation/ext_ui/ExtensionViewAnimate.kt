@@ -76,12 +76,6 @@ fun View.animateSpeedWayFromRightToLeft() {
     this.startAnimation(animation)
 }
 
-fun View.animateAlphaUp(duration: Long = 800) {
-    val animation1 = AlphaAnimation(0.2f, 1.0f)
-    animation1.duration = duration
-    this.startAnimation(animation1)
-}
-
 fun View.animateAlphaDown() {
     val animation1 = AlphaAnimation(1.0f, 0.0f)
     animation1.duration = 800
@@ -111,12 +105,6 @@ fun View.animateSpeedWayFromDownToUp(fromAlpha: Float = 1.0f) {
 
     animation.interpolator = AnticipateOvershootInterpolator()
     this.startAnimation(animation)
-}
-
-fun View.animateFromZeroToBig() {
-    val up1 = AnimationUtils.loadAnimation(this.context, R.anim.scale)
-    up1.startOffset = 105
-    this.startAnimation(up1)
 }
 
 fun View.animateUpDown() {

@@ -191,7 +191,7 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
 
         binding.imageViewSave.setOnClickListener {
             it.animateUpDown()
-            tableViewModel.saveFile(applicationContext, bitmap)
+            tableViewModel.saveToFile(applicationContext, bitmap)
         }
     }
 

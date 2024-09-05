@@ -9,12 +9,6 @@ import com.oleg.ivanov.testpoint.repository.model.PointModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * О боже, вы реально смотрите код =)
- * Можно сделать на канвасе как здесь, можно заморочиться с recyclerView если масштаб не нужен
- * Можно векторную штуку наваять но это овер-кодинг для тестового =)))
- */
-
 class GraphPoint {
 
     suspend fun createBitmap(points: List<PointModel>): Bitmap? {

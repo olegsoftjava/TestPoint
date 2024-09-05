@@ -11,7 +11,7 @@ class AppSettings {
         const val BASE_URL = "https://hr-challenge.dev.tapyou.com/"
 
         /**
-         * URL бэкенда
+         * URL сохраненного файла
          */
         const val FILE_IMAGE = "point_graph_"
     }

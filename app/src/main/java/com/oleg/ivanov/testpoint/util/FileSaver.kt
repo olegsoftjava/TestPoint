@@ -18,9 +18,8 @@ import java.util.Locale
 class FileSaver {
 
     suspend fun saveBitmapToPictures(context: Context, bitmap: Bitmap): Boolean {
-        var saveSuccess = false
-
-        withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
+            var saveSuccess = false
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val fileName = "${AppSettings.FILE_IMAGE}$timeStamp.jpg"
 
@@ -53,8 +52,7 @@ class FileSaver {
                     false
                 }
             }
+            saveSuccess
         }
-
-        return saveSuccess
     }
 }
