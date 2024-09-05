@@ -75,6 +75,7 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
                 savedInstanceState.getParcelable("recycler_state")
             }
             currentScale = savedInstanceState.getFloat("image_scale", 1.0f)
+            Log.i("TEST_1_1", "restore savedInstanceState -> currentScale=$currentScale")
         }
 
         render()
@@ -82,8 +83,10 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
         binding.imageView.setOnMatrixChangeListener { _ ->
             val matrixValues = FloatArray(9)
             binding.imageView.imageMatrix.getValues(matrixValues)
-            currentScale = matrixValues[Matrix.MSCALE_X]
-            Log.i("TEST_1_1", "currentScale = $currentScale")
+            if (matrixValues[Matrix.MSCALE_X] != 1f) {
+                currentScale = matrixValues[Matrix.MSCALE_X]
+            }
+            Log.i("TEST_1_1", "setOnMatrixChangeListener -> currentScale=$currentScale")
         }
 
         lifecycleScope.launch {
@@ -99,6 +102,7 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
             binding.recyclerViewPoint.layoutManager?.onSaveInstanceState()
         )
         outState.putFloat("image_scale", currentScale)
+        Log.i("TEST_1_1", "onSaveInstanceState -> currentScale=$currentScale")
     }
 
     private fun render() {
@@ -167,9 +171,11 @@ class TableActivity : BaseActivity<ActivityTableBinding>(ActivityTableBinding::i
             .load(bitmap)
             .into(binding.imageView as ImageView)
         binding.imageView.animateSpeedWayFromDownToUp(0f)
-        try {
-            binding.imageView.setScale(currentScale, true)
-        } catch (_: Exception) {
+        lifecycleScope.launch {
+            try {
+                binding.imageView.setScale(currentScale, true)
+            } catch (_: Exception) {
+            }
         }
     }
 

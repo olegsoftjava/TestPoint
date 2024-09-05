@@ -19,7 +19,7 @@ class PointsViewModelImpl @Inject constructor(
         get() = _viewState
 
     override fun getPoints(count: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val result = runCatching {
                 pointsManager.getPoints(count)
             }
