@@ -21,10 +21,8 @@ import com.oleg.ivanov.testpoint.presentation.ext_ui.animateUpDown
 import com.oleg.ivanov.testpoint.presentation.points_screen.view_model.PointsViewModelImpl
 import com.oleg.ivanov.testpoint.presentation.points_screen.view_model.PointsViewState
 import com.oleg.ivanov.testpoint.screen_router.ScreenRouter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
@@ -47,16 +45,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        setupInsets()
+        setupButtonStart()
+        render()
+    }
+
+    private fun setupInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        setupButtonStart()
-
-        render()
-
     }
 
     private fun render() {
@@ -64,38 +63,38 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             pointsViewModel.viewState.collect { data ->
                 updateUI(isLoading = false)
                 when (data) {
-                    is PointsViewState.PointData -> {
-                        screenRouter.openTableScreen(this@MainActivity, data.pointModel)
-                    }
+                    is PointsViewState.PointData -> screenRouter.openTableScreen(
+                        this@MainActivity,
+                        data.pointModel
+                    )
 
-                    is PointsViewState.PointError -> {
-                        withContext(Dispatchers.Main) {
-                            showError()
-                            binding.buttonStart.animateLeftRight()
-                            Toast.makeText(
-                                /* context = */ this@MainActivity,
-                                /* text = */
-                                "code:${data.errorModel.code} Error:${data.errorModel.description}",
-                                /* duration = */
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+                    is PointsViewState.PointError -> showErrorAndRetry(data)
                 }
             }
         }
+    }
+
+    private fun showErrorAndRetry(data: PointsViewState.PointError) {
+        showError()
+        binding.buttonStart.animateLeftRight()
+        showToast("code:${data.errorModel.code} Error:${data.errorModel.description}")
     }
 
     private fun setupButtonStart() {
         binding.buttonStart.animateUpDown()
 
         binding.buttonStart.setOnClickListener {
-            handleButtonStart()
+            onStartButtonClicked()
         }
 
         binding.editTextCount.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_SEND) {
-                handleButtonStart()
+            if (actionId in listOf(
+                    EditorInfo.IME_ACTION_DONE,
+                    EditorInfo.IME_ACTION_GO,
+                    EditorInfo.IME_ACTION_SEND
+                )
+            ) {
+                onStartButtonClicked()
                 true
             } else {
                 false
@@ -103,20 +102,21 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
-    private fun handleButtonStart() {
+    private fun onStartButtonClicked() {
         updateUI(isLoading = true)
         try {
-            pointsViewModel.getPoints(binding.editTextCount.text.toString().toInt())
-        } catch (_: Exception) {
-            binding.textCountInputLayout.animateLeftRight()
-            showError()
-            updateUI(isLoading = false)
-            Toast.makeText(
-                this@MainActivity,
-                "Введено не верное количество.",
-                Toast.LENGTH_SHORT
-            ).show()
+            val count = binding.editTextCount.text.toString().toInt()
+            pointsViewModel.getPoints(count)
+        } catch (e: NumberFormatException) {
+            showErrorOnInput()
         }
+    }
+
+    private fun showErrorOnInput() {
+        binding.textCountInputLayout.animateLeftRight()
+        showError()
+        updateUI(isLoading = false)
+        showToast("Введено не верное количество.")
     }
 
     private fun updateUI(isLoading: Boolean) {
@@ -135,4 +135,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 }
