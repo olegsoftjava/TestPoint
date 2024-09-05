@@ -50,8 +50,8 @@ class PointsManagerImpl @Inject constructor(
                     else -> ResponsePointModel(
                         pointModel = null,
                         errorModel = ErrorModel(
-                            response.errorBody()?.byteString().toString(),
-                            response.code()
+                            description = response.errorBody()?.byteString()?.toString() ?: "Unknown error",
+                            code = response.code()
                         )
                     )
                 }
