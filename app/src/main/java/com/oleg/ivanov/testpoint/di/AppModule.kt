@@ -9,6 +9,6 @@ class AppModule(private val contextApp: Context) {
 
     @ApplicationScope
     @Provides
-    fun getAppContext() = contextApp
+    fun provideContext() = contextApp
 
 }

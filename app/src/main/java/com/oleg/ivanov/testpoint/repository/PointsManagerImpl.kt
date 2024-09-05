@@ -1,5 +1,7 @@
 package com.oleg.ivanov.testpoint.repository
 
+import android.content.Context
+import com.oleg.ivanov.testpoint.R
 import com.oleg.ivanov.testpoint.network.NetworkService
 import com.oleg.ivanov.testpoint.repository.model.ErrorModel
 import com.oleg.ivanov.testpoint.repository.model.PointModel
@@ -10,7 +12,8 @@ import org.json.JSONObject
 import javax.inject.Inject
 
 class PointsManagerImpl @Inject constructor(
-    private val networkService: NetworkService
+    private val networkService: NetworkService,
+    private val context: Context
 ) : PointsManager {
 
     override suspend fun getPoints(count: Int): ResponsePointModel {
@@ -18,7 +21,7 @@ class PointsManagerImpl @Inject constructor(
             return ResponsePointModel(
                 pointModel = null,
                 errorModel = ErrorModel(
-                    description = "Incorrect quantity. Quantity must be greater than 0",
+                    description = context.getString(R.string.error_quantity_must_be_greater_than_0),
                     code = -1
                 )
             )
@@ -50,7 +53,8 @@ class PointsManagerImpl @Inject constructor(
                     else -> ResponsePointModel(
                         pointModel = null,
                         errorModel = ErrorModel(
-                            description = response.errorBody()?.byteString()?.toString() ?: "Unknown error",
+                            description = response.errorBody()?.byteString()?.toString()
+                                ?: context.getString(R.string.unknown_error),
                             code = response.code()
                         )
                     )
