@@ -14,6 +14,15 @@ class PointsManagerImpl @Inject constructor(
 ) : PointsManager {
 
     override suspend fun getPoints(count: Int): ResponsePointModel {
+        if (count <= 0) {
+            return ResponsePointModel(
+                pointModel = null,
+                errorModel = ErrorModel(
+                    description = "Incorrect quantity. Quantity must be greater than 0",
+                    code = -1
+                )
+            )
+        }
         return withContext(Dispatchers.Default) {
             try {
                 val response =
@@ -40,7 +49,10 @@ class PointsManagerImpl @Inject constructor(
 
                     else -> ResponsePointModel(
                         pointModel = null,
-                        errorModel = ErrorModel(response.message(), response.code())
+                        errorModel = ErrorModel(
+                            response.errorBody()?.byteString().toString(),
+                            response.code()
+                        )
                     )
                 }
             } catch (e: Exception) {

@@ -75,7 +75,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun showErrorAndRetry(data: PointsViewState.PointError) {
-        showError()
+        showError(data.errorModel.code)
         binding.buttonStart.animateLeftRight()
         showToast("code:${data.errorModel.code} Error:${data.errorModel.description}")
     }
@@ -114,7 +114,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun showErrorOnInput() {
         binding.textCountInputLayout.animateLeftRight()
-        showError()
+        showError(0)
         updateUI(isLoading = false)
         showToast("Введено не верное количество.")
     }
@@ -124,8 +124,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         binding.buttonStart.isEnabled = !isLoading
     }
 
-    private fun showError() {
+    private fun showError(errorCode: Int) {
         lifecycleScope.launch {
+            if (errorCode == 500) {
+                binding.imageViewError.setImageResource(R.drawable.ic_error_500)
+            } else {
+                binding.imageViewError.setImageResource(R.drawable.ic_error)
+            }
             binding.imageViewError.isVisible = true
             binding.imageViewError.animateSpeedWayFromDownToUp()
             delay(1000)
